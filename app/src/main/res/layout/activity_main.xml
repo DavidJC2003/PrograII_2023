@@ -10,7 +10,7 @@
         android:id="@+id/txtnombre"
         android:layout_width="294dp"
         android:layout_height="39dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="136dp"
         android:ems="10"
         android:hint="Nombre"
         android:inputType="textPersonName"
