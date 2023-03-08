@@ -49,12 +49,12 @@
         android:id="@+id/txtmail"
         android:layout_width="294dp"
         android:layout_height="39dp"
-        android:layout_marginTop="396dp"
+        android:layout_marginTop="392dp"
         android:ems="10"
         android:hint="e-mail"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.418"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
