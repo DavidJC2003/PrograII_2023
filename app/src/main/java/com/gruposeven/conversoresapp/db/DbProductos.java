@@ -2,9 +2,15 @@ package com.gruposeven.conversoresapp.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
+
+import com.gruposeven.conversoresapp.entidades.Productos;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class DbProductos extends DbHelper{
 
@@ -44,8 +50,35 @@ public class DbProductos extends DbHelper{
     }
 
 
+        public ArrayList<Productos> mostrarproductos(){
+
+            DbHelper dbHelper = new DbHelper(context);
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+            ArrayList<Productos> listaproductod = new ArrayList<>();
+
+            Productos productos = null;
+            Cursor cursorproductos = null;
+
+            cursorproductos = db.rawQuery("SELECT * FROM " + TABLE_PRODUCTOS, null);
+            if (cursorproductos.moveToFirst()){
+                do {
+                    productos = new Productos();
+                    productos.setId(cursorproductos.getInt(0));
+                    productos.setNombre(cursorproductos.getString(1));
+                    productos.setMarca(cursorproductos.getString(2));
+                    productos.setPresentacion(cursorproductos.getString(3));
+                    productos.setPrecio(cursorproductos.getString(4));
+
+                    listaproductod.add(productos);
+                } while (cursorproductos.moveToNext());
+
+            }
+            cursorproductos.close();
+            return listaproductod;
 
 
+        }
 
 
 

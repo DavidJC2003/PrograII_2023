@@ -2,23 +2,40 @@ package com.gruposeven.conversoresapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gruposeven.conversoresapp.db.DbProductos;
+
+import org.w3c.dom.Text;
 
 public class AgregarProductos extends AppCompatActivity {
 
     EditText txtnombre, txtmarca, txtpresentacion, txtprecio;
     Button btnagregarP;
 
+    FloatingActionButton btn;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar_productos);
+
+     btn=findViewById(R.id.btnregresar);
+     btn.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+             Intent m = new Intent(AgregarProductos.this, MainActivity.class);
+             startActivity(m);
+         }
+     });
 
         txtnombre=findViewById(R.id.txtnombre);
         txtmarca=findViewById(R.id.txtmarca);
