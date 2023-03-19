@@ -8,10 +8,10 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.gruposeven.conversoresapp.adaptadores.listaproductosadd;
 import com.gruposeven.conversoresapp.db.DbHelper;
 import com.gruposeven.conversoresapp.db.DbProductos;
 import com.gruposeven.conversoresapp.entidades.Productos;

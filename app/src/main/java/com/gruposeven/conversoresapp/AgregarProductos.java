@@ -23,7 +23,8 @@ public class AgregarProductos extends AppCompatActivity {
 
     FloatingActionButton btn;
 
-    Productos productos;
+
+
     int id = 0;
 
 

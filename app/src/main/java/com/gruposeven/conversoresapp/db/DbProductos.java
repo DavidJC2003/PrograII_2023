@@ -86,25 +86,25 @@ public class DbProductos extends DbHelper{
 
 
 
-        Productos productos = null;
+        Productos ver = null;
         Cursor cursorproductos ;
 
         cursorproductos = db.rawQuery("SELECT * FROM " + TABLE_PRODUCTOS + "WHERE id = " + id + "LIMIT 1", null);
         if (cursorproductos.moveToFirst()){
 
-                productos = new Productos();
-                productos.setId(cursorproductos.getInt(0));
-                productos.setNombre(cursorproductos.getString(1));
-                productos.setMarca(cursorproductos.getString(2));
-                productos.setPresentacion(cursorproductos.getString(3));
-                productos.setPrecio(cursorproductos.getString(4));
+                ver = new Productos();
+                ver.setId(cursorproductos.getInt(0));
+                ver.setNombre(cursorproductos.getString(1));
+                ver.setMarca(cursorproductos.getString(2));
+                ver.setPresentacion(cursorproductos.getString(3));
+                ver.setPrecio(cursorproductos.getString(4));
 
 
 
 
         }
         cursorproductos.close();
-        return productos;
+        return ver;
 
 
     }

@@ -1,4 +1,4 @@
-package com.gruposeven.conversoresapp;
+package com.gruposeven.conversoresapp.adaptadores;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gruposeven.conversoresapp.R;
+import com.gruposeven.conversoresapp.Ver;
 import com.gruposeven.conversoresapp.entidades.Productos;
 
 import java.util.ArrayList;
@@ -65,7 +67,7 @@ public class listaproductosadd extends RecyclerView.Adapter<listaproductosadd.Co
                     Context context = view.getContext();
                     Intent intent = new Intent(context, Ver.class);
 
-                    intent.putExtra("ID", listaproductos1.get(getAdapterPosition()).getId());
+                    intent.putExtra("ID", listaproductos1.get(getAdapterPosition()).getNombre());
                     context.startActivity(intent);
                 }
             });
