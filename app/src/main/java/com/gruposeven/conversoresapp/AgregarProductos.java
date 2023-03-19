@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gruposeven.conversoresapp.db.DbProductos;
+import com.gruposeven.conversoresapp.entidades.Productos;
 
 import org.w3c.dom.Text;
 
@@ -22,11 +23,18 @@ public class AgregarProductos extends AppCompatActivity {
 
     FloatingActionButton btn;
 
+    Productos productos;
+    int id = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar_productos);
+
+
+
+
 
      btn=findViewById(R.id.btnregresar);
      btn.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +69,10 @@ public class AgregarProductos extends AppCompatActivity {
                 }
             }
         });
+
+
+
+
     }
 
     private void limpiar(){

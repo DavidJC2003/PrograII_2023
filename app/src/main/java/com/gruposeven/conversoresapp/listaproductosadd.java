@@ -1,5 +1,7 @@
 package com.gruposeven.conversoresapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +58,17 @@ public class listaproductosadd extends RecyclerView.Adapter<listaproductosadd.Co
             viewmarca = itemView.findViewById(R.id.viewmarca);
             viewpersentacion = itemView.findViewById(R.id.viewpresentacion);
             viewprecio = itemView.findViewById(R.id.viewprecio);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Context context = view.getContext();
+                    Intent intent = new Intent(context, Ver.class);
+
+                    intent.putExtra("ID", listaproductos1.get(getAdapterPosition()).getId());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

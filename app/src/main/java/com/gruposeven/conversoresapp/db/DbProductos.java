@@ -79,6 +79,35 @@ public class DbProductos extends DbHelper{
 
 
         }
+    public Productos verproductos(int id){
+
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
+
+        Productos productos = null;
+        Cursor cursorproductos ;
+
+        cursorproductos = db.rawQuery("SELECT * FROM " + TABLE_PRODUCTOS + "WHERE id = " + id + "LIMIT 1", null);
+        if (cursorproductos.moveToFirst()){
+
+                productos = new Productos();
+                productos.setId(cursorproductos.getInt(0));
+                productos.setNombre(cursorproductos.getString(1));
+                productos.setMarca(cursorproductos.getString(2));
+                productos.setPresentacion(cursorproductos.getString(3));
+                productos.setPrecio(cursorproductos.getString(4));
+
+
+
+
+        }
+        cursorproductos.close();
+        return productos;
+
+
+    }
 
 
 
