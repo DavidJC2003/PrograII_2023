@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -18,24 +19,35 @@ import com.gruposeven.conversoresapp.entidades.Productos;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
-        FloatingActionButton btn;
+        FloatingActionButton btn, btn2;
 
         RecyclerView listaProductos;
         ArrayList<Productos> listaarrayPro;
+    listaproductosadd adapter;
 
+        SearchView buscar;
+
+
+        // Salvador Ernesto Andrade Peña        USSS008322
+        // Maria Estefany Salgado Osorio        USSS026222
+        // Ronald Aldair Granillo
+        // David Ernesto Jaime Carrillo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        buscar= findViewById(R.id.txtbuscar);
+
+
         listaProductos=findViewById(R.id.listaProductos);
         listaProductos.setLayoutManager(new LinearLayoutManager(this));
 
         DbProductos dbProductos = new DbProductos(MainActivity.this);
 
         listaarrayPro = new ArrayList<>();
-        listaproductosadd adapter = new listaproductosadd(dbProductos.mostrarproductos());
+        adapter = new listaproductosadd(dbProductos.mostrarproductos());
 
         listaProductos.setAdapter(adapter);
 
@@ -52,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No se pudo cargar la Base de Datos", Toast.LENGTH_SHORT).show();
         }
 
-
+            buscar.setOnQueryTextListener(this);
 
 
 
@@ -77,5 +89,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        adapter.filtrado(s);
+        return false;
     }
 }
