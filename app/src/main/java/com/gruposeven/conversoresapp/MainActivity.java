@@ -1,268 +1,202 @@
 package com.gruposeven.conversoresapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-
-
-    Bundle parametros = new Bundle();
-
-    ProgressDialog progreso;
-    JSONArray datosJSON;
-    JSONObject jsonObject;
-
-    int posicion=0;
-
-
-
-    InputStreamReader isReader;
-
-
-
+    BD db_agenda;
+    String accion="nuevo";
+    String id="";
+    String rev="";
+    String idUnico;
+    Button btn;
+    TextView temp;
+    FloatingActionButton fab;
+    ImageView img;
+    String urlCompletaImg="";
+    Intent tomarFotoIntent;
+    utilidades utl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        obtenerDatos myAsync = new obtenerDatos();
-        myAsync.execute();
-
-        FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.btnAgregar);
+        utl = new utilidades();
+        btn = findViewById(R.id.btnGuardar);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                parametros.putString("accion", "nuevo");
-                nuevo_catalogo();
+                guardar_agenda();
             }
         });
-
-    }
-
-    public void  nuevo_catalogo(){
-        Intent agregar_catalogo = new Intent(MainActivity.this, agregaronline.class);
-        agregar_catalogo.putExtras(parametros);
-        startActivity(agregar_catalogo);
-    }
-
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo){
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-        try {
-
-            datosJSON.getJSONObject(info.position);
-            menu.setHeaderTitle(datosJSON.getJSONObject(info.position).getJSONObject("value").getString("nombre").toString());
-            posicion = info.position;
-
-        }catch (Exception e){
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
-
-    public boolean onContextItemSelected(MenuItem item){
-        switch (item.getItemId()){
-
-            case R.id.mnxAgregar:
-                parametros.putString("accion","nuevo");
-                nuevo_catalogo();
-                return true;
-
-
-            case R.id.mnxModificar:
-                parametros.putString("accion","modificar");
-            try {
-                parametros.putString("valores", datosJSON.getJSONObject(posicion).getJSONObject("value").toString());
-                nuevo_catalogo();
-            }catch (Exception e){
-                Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
-            }
-            return true;
-
-
-         case R.id.mnxEliminar:
-             JSONObject miData = new JSONObject();
-             try {
-                 miData.put("_id",datosJSON.getJSONObject(posicion).getJSONObject("value").getString("_id"));
-             }catch (Exception e){
-                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
-             }
-             eliminarDatos objEliminar = new eliminarDatos();
-             objEliminar.execute(miData.toString());
-             return true;
-        }
-
-        return super.onContextItemSelected(item);
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    private class obtenerDatos extends AsyncTask<Void, Void, String> {
-        HttpURLConnection urlConnection;
-
-        @Override
-        protected String doInBackground(Void... params) {
-            StringBuilder result = new StringBuilder();
-
-            try {
-                URL url = new URL("http://192.168.100.3:5984/db_catalogo/_design/catalogo/_view/mi_catalogo");
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-
-                InputStream in = new BufferedInputStream(urlConnection.getErrorStream());
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                String line;
-                while ((line = reader.readLine()) != null)
-                {
-                    result.append(line);
-                }
-
-            } catch (Exception ex) {
-                Log.e("Mi Error", "Error", ex);
-                ex.printStackTrace();
-
-            } finally {
-                urlConnection.disconnect();
-            }
-
-
-            return result.toString();
-        }
-
-
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            try {
-                jsonObject = new JSONObject(s);
-                datosJSON = jsonObject.getJSONArray("rows");
-
-                ListView lstCatalogo = (ListView) findViewById(R.id.ltscatalogo);
-
-                final ArrayList<String> alAgenda = new ArrayList<String>();
-                final ArrayAdapter<String> aaAgenda = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, alAgenda);
-
-             lstCatalogo.setAdapter(aaAgenda);
-
-             for (int i=0; i<datosJSON.length(); i++){
-                 alAgenda.add(datosJSON.getJSONObject(i).getJSONObject("value").getString("nombre").toString());
-
-                }
-                aaAgenda.notifyDataSetChanged();;
-                registerForContextMenu(lstCatalogo);
-
-
-            } catch (Exception ex) {
-                Toast.makeText(MainActivity.this, "Error" + ex.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            }
-
-        }
-
-    }
-        private class eliminarDatos extends AsyncTask<String, String, String>{
-            HttpURLConnection urlConnection;
-
+        fab = findViewById(R.id.fabRegresarListaAmigos);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            protected String doInBackground(String... params) {
-                StringBuilder result = new StringBuilder();
-
-
-                String JsonResponse = null;
-                String JsonDATA = params[0];
-                BufferedReader reader = null;
-
-                try{
-                    String uri = "http://192.168.100.3:5984/db_catalogo/"+
-                      datosJSON.getJSONObject(posicion).getJSONObject("value").getString("_id")+ "?rev="+ datosJSON.getJSONObject(posicion).getJSONObject("value").getString("_rev");
-                    URL url = new URL(uri);
-
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("DELETE");
-
-                    InputStream in = new BufferedInputStream(urlConnection.getErrorStream());
-                    reader = new BufferedReader(new InputStreamReader(in));
-                    String line ;
-                    while ((line = reader.readLine()) !=null){
-                        result.append(line);
-
-                    }
-
-
-
-                } catch (Exception ex){
-
-                    Log.e("Mi Error", "Error", ex);
-                    ex.printStackTrace();
-
-                }finally {
-                    urlConnection.disconnect();
-                }
-                return result.toString();
+            public void onClick(View view) {
+                regresarListaAmigos();
             }
-
-
-            protected void onPostExecute(String s){
-                super.onPostExecute(s);
-
-                try {
-                    JSONObject jsonObject1 = new JSONObject(s);
-
-                    if (jsonObject1.getBoolean("ok")){
-                        Toast.makeText(MainActivity.this, "Registro Eliminado", Toast.LENGTH_SHORT).show();
-                        Intent regresar = new Intent(MainActivity.this, MainActivity.class);
-                        startActivity(regresar);
-                    }else {
-                        Toast.makeText(MainActivity.this, "Error al Eliminar Registro...", Toast.LENGTH_SHORT).show();
-                    }
-
-                }catch (Exception ex){
-                    Toast.makeText(MainActivity.this, "Error al enviar a la red", Toast.LENGTH_SHORT).show();
-                }
-
+        });
+        img = findViewById(R.id.imgAmigo);
+        img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tomarFotoAmigo();
             }
-        }
-
-
-
+        });
+        mostrar_datos_amigos();
     }
+    void mostrar_datos_amigos(){
+        try {
+            Bundle parametros = getIntent().getExtras();
+            accion = parametros.getString("accion");
+            if (accion.equals("modificar")) {
+                //String amigos[] = parametros.getStringArray("amigos");
+                JSONObject jsonObject = new JSONObject(parametros.getString("amigos")).getJSONObject("value");
+
+                id = jsonObject.getString("_id");
+                rev = jsonObject.getString("_rev");
+                idUnico = jsonObject.getString(("idUnico"));
+
+                temp = findViewById(R.id.txtnombre);
+                temp.setText(jsonObject.getString("nombre"));
+
+                temp = findViewById(R.id.txtdireccion);
+                temp.setText(jsonObject.getString("direccion"));
+
+                temp = findViewById(R.id.txtTelefono);
+                temp.setText(jsonObject.getString("telefono"));
+
+                temp = findViewById(R.id.txtemail);
+                temp.setText(jsonObject.getString("email"));
+
+                urlCompletaImg = jsonObject.getString("urlFoto");
+                Bitmap bitmap = BitmapFactory.decodeFile(urlCompletaImg);
+                img.setImageBitmap(bitmap);
+            }else{
+                idUnico = utl.generarIdUnico();
+            }
+        }catch (Exception ex){
+            Toast.makeText(this, "Error al mostrar los datos: "+ ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    void guardar_agenda(){
+        try {
+            temp = (TextView) findViewById(R.id.txtnombre);
+            String nombre = temp.getText().toString();
+
+            temp = (TextView) findViewById(R.id.txtdireccion);
+            String direccion = temp.getText().toString();
+
+            temp = (TextView) findViewById(R.id.txtTelefono);
+            String telefono = temp.getText().toString();
+
+            temp = (TextView) findViewById(R.id.txtemail);
+            String email = temp.getText().toString();
+
+            //guardar datos en servidor
+            JSONObject datosAmigos = new JSONObject();
+            if( accion.equals("modificar") && id.length()>0 && rev.length()>0 ){
+                datosAmigos.put("_id", id);
+                datosAmigos.put("_rev", rev);
+            }
+            datosAmigos.put("idUnico", idUnico);
+            datosAmigos.put("nombre", nombre);
+            datosAmigos.put("direccion", direccion);
+            datosAmigos.put("telefono", telefono);
+            datosAmigos.put("email", email);
+            datosAmigos.put("urlFoto", urlCompletaImg);
+
+            enviarDatosServidor objGuardarDatosServidor= new enviarDatosServidor(getApplicationContext());
+            String msg = objGuardarDatosServidor.execute(datosAmigos.toString()).get();
+            JSONObject respJSON = new JSONObject(msg);
+            if( respJSON.getBoolean("ok") ){
+                id = respJSON.getString("id");
+                rev = respJSON.getString("rev");
+            } else {
+                msg = "No fue pisible guardar en el servidor el amigo: "+ msg;
+            }
+            db_agenda = new BD(MainActivity.this, "",null,1);
+            String result = db_agenda.administrar_agenda(id, rev, idUnico, nombre, direccion, telefono, email, urlCompletaImg, accion);
+            msg = result;
+            if( result.equals("ok") ){
+                msg = "Registro guardado con exito";
+                regresarListaAmigos();
+            }
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        }catch (Exception e){
+            Toast.makeText(this, "Error en guardar agenda: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    void regresarListaAmigos(){
+        Intent iListaAmigos = new Intent(MainActivity.this, lista_amigos.class);
+        startActivity(iListaAmigos);
+    }
+    private void tomarFotoAmigo(){
+        tomarFotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if( tomarFotoIntent.resolveActivity(getPackageManager())!=null ){
+            File fotoAmigo = null;
+            try{
+                fotoAmigo = crearImagenAmigo();
+                if( fotoAmigo!=null ){
+                    Uri uriFotoAmigo = FileProvider.getUriForFile(MainActivity.this,
+                            "com.ugb.miapp.fileprovider", fotoAmigo);
+                    tomarFotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriFotoAmigo);
+                    startActivityForResult(tomarFotoIntent, 1);
+                }
+            }catch (Exception ex){
+                Toast.makeText(this, "Error al tomar la foto: "+ ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }else{
+            Toast.makeText(this, "NO se selecciono una foto... ", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try{
+            if( requestCode==1 && resultCode==RESULT_OK ){
+                Bitmap imagenBitmap = BitmapFactory.decodeFile(urlCompletaImg);
+                img.setImageBitmap(imagenBitmap);
+            }else{
+                Toast.makeText(this, "Se cancelo la seleccion de la foto", Toast.LENGTH_LONG).show();
+            }
+        }catch (Exception ex){
+            Toast.makeText(this, "Error al mostrar la camara: "+ ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private File crearImagenAmigo() throws Exception{
+        String fechaHoraMs = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = "imagen_"+ fechaHoraMs +"_";
+        File dirAlmacenamiento = getExternalFilesDir(Environment.DIRECTORY_DCIM);
+        if(dirAlmacenamiento.exists()==false ){
+            dirAlmacenamiento.mkdirs();
+        }
+        File image = File.createTempFile(fileName, ".jpg", dirAlmacenamiento);
+        urlCompletaImg = image.getAbsolutePath();
+        return image;
+    }
+}
