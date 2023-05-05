@@ -6,19 +6,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TabHost;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+        TabHost tbthost;
 
+        Button btnconvertir;
 
-    Button monedas;
-    Button volumen;
+        TextView temp;
 
-    Button longitud;
+        Spinner spn;
 
-    Button datostbtn;
+        conversor miConversor = new conversor();
 
-    Button bttime;
 
 
 
@@ -27,71 +30,40 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tbthost= (TabHost) findViewById(R.id.tabhost);
+        tbthost.setup();
+
+       TabHost.TabSpec tab1 = tbthost.newTabSpec("tab1");
+       tab1.setIndicator("Conversor");
+       tab1.setContent(R.id.tab1);
+
+        TabHost.TabSpec tab2 = tbthost.newTabSpec("tab2");
+        tab2.setIndicator("Lectura");
+        tab2.setContent(R.id.tab2);
+
+        tbthost.addTab(tab1);
+        tbthost.addTab(tab2);
 
 
-        bttime=(Button)findViewById(R.id.btnTiempo);
-        bttime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent t = new Intent(MainActivity.this, Tiempo.class);
-                startActivity(t);
-            }
-        });
-
-
-        datostbtn=(Button)findViewById(R.id.btnDatos) ;
-
-        datostbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent d = new Intent(MainActivity.this, Datos.class);
-                startActivity(d);
-            }
-        });
-
-
-
-        longitud=(Button)findViewById(R.id.btnlongitud);
-
-        longitud.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent l = new Intent (MainActivity.this, Longitud.class);
-                startActivity(l);
-
-            }
-        });
-
-
-
-
-        monedas = (Button)findViewById(R.id.btnmonedas);
-
-        monedas.setOnClickListener(new View.OnClickListener() {
+        btnconvertir = (Button) findViewById(R.id.btnconvert);
+        btnconvertir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Intent m = new Intent (MainActivity.this, Monedas.class);
-                startActivity(m);
+                temp = (TextView) findViewById(R.id.txtcantidad);
+                double cantidad = Double.parseDouble(temp.getText().toString());
 
+                spn =findViewById(R.id.spn1);
+                int de = spn.getSelectedItemPosition();
 
+                spn =findViewById(R.id.spn2);
+                int a = spn.getSelectedItemPosition();
 
-            }
-        });
-
-
-
-        volumen = (Button)findViewById(R.id.btnvolumen);
-
-        volumen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent v = new Intent (MainActivity.this, Volumen.class);
-                startActivity(v);
+                temp = findViewById(R.id.txtresultado);
+                temp.setText("Resultado"+ miConversor.conversor(0,de, a, cantidad));
 
             }
         });
-
 
 
 
@@ -100,3 +72,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
+
+class conversor{
+    double [][] superficie = {
+        {1, 0.1111, 0.111111, 0.09290304, 0.0001477465648855, 0.00001317, 9.2903e-6}
+
+    };
+    public double conversor(int opcion, int de, int a, double cantidad){
+        return superficie[opcion][a]/ superficie[opcion][de]* cantidad;
+    }
+
+
+
+}
+
+//Salvador Ernesto Andrade Peña
+//Maydelin Alicia Guevara Perdomo
+//Maria Estefany Salgado Osorio
+//Emilio José Urias Reyes
