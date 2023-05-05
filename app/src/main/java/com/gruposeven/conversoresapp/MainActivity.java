@@ -3,96 +3,40 @@ package com.gruposeven.conversoresapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.wifi.hotspot2.pps.HomeSp;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    Button login;
 
-
-    Button monedas;
-    Button volumen;
-
-    Button longitud;
-
-    Button datostbtn;
-
-    Button bttime;
-
-
+    TextView Uplogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        bttime=(Button)findViewById(R.id.btnTiempo);
-        bttime.setOnClickListener(new View.OnClickListener() {
+        login = findViewById(R.id.btnIniciar);
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent t = new Intent(MainActivity.this, Tiempo.class);
-                startActivity(t);
+                Intent home = new Intent(MainActivity.this, home.class);
+                startActivity(home);
             }
         });
 
-
-        datostbtn=(Button)findViewById(R.id.btnDatos) ;
-
-        datostbtn.setOnClickListener(new View.OnClickListener() {
+        Uplogin= findViewById(R.id.btninicion);
+        Uplogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent d = new Intent(MainActivity.this, Datos.class);
-                startActivity(d);
+                Intent home = new Intent(MainActivity.this, CrearCuenta.class);
+                startActivity(home);
             }
         });
-
-
-
-        longitud=(Button)findViewById(R.id.btnlongitud);
-
-        longitud.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent l = new Intent (MainActivity.this, Longitud.class);
-                startActivity(l);
-
-            }
-        });
-
-
-
-
-        monedas = (Button)findViewById(R.id.btnmonedas);
-
-        monedas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent m = new Intent (MainActivity.this, Monedas.class);
-                startActivity(m);
-
-
-
-            }
-        });
-
-
-
-        volumen = (Button)findViewById(R.id.btnvolumen);
-
-        volumen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent v = new Intent (MainActivity.this, Volumen.class);
-                startActivity(v);
-
-            }
-        });
-
-
 
 
 
